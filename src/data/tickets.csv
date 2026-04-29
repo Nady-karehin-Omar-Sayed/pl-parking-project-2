@@ -1,0 +1,2 @@
+ticketId,plateNumber,spotId,entryTimeMillis,isPaid
+1,12345678910,1,1777498453942,true
