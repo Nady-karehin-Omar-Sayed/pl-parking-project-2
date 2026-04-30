@@ -16,7 +16,6 @@ public class EntryOperatorMenu extends JFrame {
     private JTextField spotIdField;
     private JLabel statusLabel;
 
-    // ── Same dark palette (copy from AdminMenu) ──────────
     private static final Color BG_DARK       = new Color(30,  30,  30);
     private static final Color BG_PANEL      = new Color(40,  40,  40);
     private static final Color BG_FIELD      = new Color(55,  55,  55);
@@ -34,32 +33,19 @@ public class EntryOperatorMenu extends JFrame {
         buildUI();
     }
 
-    // ══════════════════════════════════════════════════════
-    //  LAYOUT: BorderLayout
-    //    CENTER → spots table (which spots are free/taken)
-    //    SOUTH  → entry form (plate + spot) + button
-    // ══════════════════════════════════════════════════════
     private void buildUI() {
         setTitle("Entry Operator");
-        setSize(620, 500);
+        setSize(680, 560);
         setLocationRelativeTo(null);
-        // DISPOSE_ON_CLOSE: closing this window only closes
-        // THIS window — the Admin window stays open.
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         getContentPane().setBackground(BG_DARK);
         setLayout(new BorderLayout(10, 10));
-
         add(buildSpotsPanel(), BorderLayout.CENTER);
         add(buildFormPanel(),  BorderLayout.SOUTH);
         setVisible(true);
     }
 
-    // ══════════════════════════════════════════════════════
-    //  SPOTS TABLE
-    //  Shows all spots with their status (Free / Occupied).
-    //  Clicking a row auto-fills the Spot ID field below —
-    //  this saves the operator from typing the ID manually.
-    // ══════════════════════════════════════════════════════
+    // ── Spots Table ───────────────────────────────────────
     private JPanel buildSpotsPanel() {
         JPanel panel = new JPanel(new BorderLayout(6, 8));
         panel.setBackground(BG_PANEL);
@@ -76,7 +62,7 @@ public class EntryOperatorMenu extends JFrame {
 
         JTable table = styledTable(spotsTableModel);
 
-        // Row click → fill spotIdField automatically
+        // clicking a row fills Spot ID field automatically
         table.getSelectionModel().addListSelectionListener(e -> {
             int row = table.getSelectedRow();
             if (row >= 0)
@@ -104,42 +90,66 @@ public class EntryOperatorMenu extends JFrame {
             });
     }
 
-    // ══════════════════════════════════════════════════════
-    //  ENTRY FORM
-    //  Operator fills plate number + spot ID, then clicks
-    //  Register Entry. This calls manager.createTicket()
-    //  which marks the spot occupied and saves to CSV.
-    // ══════════════════════════════════════════════════════
+    // ── Bottom Form (Register Entry + Add Spot) ───────────
     private JPanel buildFormPanel() {
         JPanel wrapper = new JPanel(new BorderLayout(0, 8));
         wrapper.setBackground(BG_PANEL);
         wrapper.setBorder(new EmptyBorder(0, 14, 14, 14));
 
-        JPanel form = new JPanel(new GridLayout(2, 2, 8, 8));
-        form.setBackground(BG_PANEL);
-        form.setBorder(BorderFactory.createTitledBorder(
+        // ── Register Car Entry ──
+        JPanel entryForm = new JPanel(new GridLayout(2, 2, 8, 8));
+        entryForm.setBackground(BG_PANEL);
+        entryForm.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(BORDER_COLOR), "Register Car Entry",
             0, 0, new Font("SansSerif", Font.PLAIN, 12), TEXT_DIM));
 
         plateField  = darkField();
         spotIdField = darkField();
 
-        form.add(darkLabel("Plate Number:")); form.add(plateField);
-        form.add(darkLabel("Spot ID:"));      form.add(spotIdField);
+        entryForm.add(darkLabel("Plate Number:")); entryForm.add(plateField);
+        entryForm.add(darkLabel("Spot ID:"));      entryForm.add(spotIdField);
 
+        // ── Add Spot ──
+        JPanel addSpotForm = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        addSpotForm.setBackground(BG_PANEL);
+        addSpotForm.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(BORDER_COLOR), "Add Spot",
+            0, 0, new Font("SansSerif", Font.PLAIN, 12), TEXT_DIM));
+
+        JComboBox<String> zoneBox = new JComboBox<>(new String[]{"A", "B", "C", "D"});
+        zoneBox.setBackground(BG_FIELD);
+        zoneBox.setForeground(TEXT_PRIMARY);
+
+        JButton addSpotBtn = makeButton("Add Spot", ACCENT_BLUE);
+        addSpotBtn.addActionListener(e -> {
+            manager.addSpot((String) zoneBox.getSelectedItem());
+            refreshSpotsTable();
+        });
+
+        addSpotForm.add(darkLabel("Zone:"));
+        addSpotForm.add(zoneBox);
+        addSpotForm.add(addSpotBtn);
+
+        // ── Both forms side by side ──
+        JPanel formsRow = new JPanel(new GridLayout(1, 2, 10, 0));
+        formsRow.setBackground(BG_PANEL);
+        formsRow.add(entryForm);
+        formsRow.add(addSpotForm);
+
+        // ── Status + Register button ──
         statusLabel = new JLabel(" ");
         statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
-        JButton btn = makeButton("✅ Register Entry", ACCENT_GREEN);
-        btn.addActionListener(e -> handleEntry());
+        JButton entryBtn = makeButton("✅ Register Entry", ACCENT_GREEN);
+        entryBtn.addActionListener(e -> handleEntry());
 
         JPanel bottom = new JPanel(new BorderLayout(8, 0));
         bottom.setBackground(BG_PANEL);
         bottom.add(statusLabel, BorderLayout.CENTER);
-        bottom.add(btn,         BorderLayout.EAST);
+        bottom.add(entryBtn,    BorderLayout.EAST);
 
-        wrapper.add(form,   BorderLayout.CENTER);
-        wrapper.add(bottom, BorderLayout.SOUTH);
+        wrapper.add(formsRow, BorderLayout.CENTER);
+        wrapper.add(bottom,   BorderLayout.SOUTH);
         return wrapper;
     }
 
@@ -164,7 +174,7 @@ public class EntryOperatorMenu extends JFrame {
             showStatus("✅ Ticket #" + ticket.getTicketId() + " created for: " + plate, ACCENT_GREEN);
             plateField.setText("");
             spotIdField.setText("");
-            refreshSpotsTable(); // update table to show spot as occupied
+            refreshSpotsTable();
         } else {
             showStatus("❌ Spot unavailable or not found.", ACCENT_RED);
         }
