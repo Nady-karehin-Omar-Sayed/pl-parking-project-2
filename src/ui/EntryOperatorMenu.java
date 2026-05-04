@@ -44,8 +44,6 @@ public class EntryOperatorMenu extends JFrame {
         add(buildFormPanel(),  BorderLayout.SOUTH);
         setVisible(true);
     }
-
-    // ── Spots Table ───────────────────────────────────────
     private JPanel buildSpotsPanel() {
         JPanel panel = new JPanel(new BorderLayout(6, 8));
         panel.setBackground(BG_PANEL);
@@ -57,12 +55,12 @@ public class EntryOperatorMenu extends JFrame {
 
         String[] cols = {"Spot ID", "Zone", "Status"};
         spotsTableModel = new DefaultTableModel(cols, 0) {
+            @Override
             public boolean isCellEditable(int r, int c) { return false; }
         };
 
         JTable table = styledTable(spotsTableModel);
 
-        // clicking a row fills Spot ID field automatically
         table.getSelectionModel().addListSelectionListener(e -> {
             int row = table.getSelectedRow();
             if (row >= 0)
@@ -90,13 +88,10 @@ public class EntryOperatorMenu extends JFrame {
             });
     }
 
-    // ── Bottom Form (Register Entry + Add Spot) ───────────
     private JPanel buildFormPanel() {
         JPanel wrapper = new JPanel(new BorderLayout(0, 8));
         wrapper.setBackground(BG_PANEL);
         wrapper.setBorder(new EmptyBorder(0, 14, 14, 14));
-
-        // ── Register Car Entry ──
         JPanel entryForm = new JPanel(new GridLayout(2, 2, 8, 8));
         entryForm.setBackground(BG_PANEL);
         entryForm.setBorder(BorderFactory.createTitledBorder(
@@ -108,8 +103,6 @@ public class EntryOperatorMenu extends JFrame {
 
         entryForm.add(darkLabel("Plate Number:")); entryForm.add(plateField);
         entryForm.add(darkLabel("Spot ID:"));      entryForm.add(spotIdField);
-
-        // ── Add Spot ──
         JPanel addSpotForm = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         addSpotForm.setBackground(BG_PANEL);
         addSpotForm.setBorder(BorderFactory.createTitledBorder(
@@ -129,18 +122,15 @@ public class EntryOperatorMenu extends JFrame {
         addSpotForm.add(darkLabel("Zone:"));
         addSpotForm.add(zoneBox);
         addSpotForm.add(addSpotBtn);
-
-        // ── Both forms side by side ──
         JPanel formsRow = new JPanel(new GridLayout(1, 2, 10, 0));
         formsRow.setBackground(BG_PANEL);
         formsRow.add(entryForm);
         formsRow.add(addSpotForm);
 
-        // ── Status + Register button ──
         statusLabel = new JLabel(" ");
         statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
-        JButton entryBtn = makeButton("✅ Register Entry", ACCENT_GREEN);
+        JButton entryBtn = makeButton("Register Entry", ACCENT_GREEN);
         entryBtn.addActionListener(e -> handleEntry());
 
         JPanel bottom = new JPanel(new BorderLayout(8, 0));
@@ -171,12 +161,12 @@ public class EntryOperatorMenu extends JFrame {
 
         Ticket ticket = manager.createTicket(plate, spotId);
         if (ticket != null) {
-            showStatus("✅ Ticket #" + ticket.getTicketId() + " created for: " + plate, ACCENT_GREEN);
+            showStatus("Ticket #" + ticket.getTicketId() + " created for: " + plate, ACCENT_GREEN);
             plateField.setText("");
             spotIdField.setText("");
             refreshSpotsTable();
         } else {
-            showStatus("❌ Spot unavailable or not found.", ACCENT_RED);
+            showStatus("Spot unavailable or not found.", ACCENT_RED);
         }
     }
 
@@ -211,7 +201,6 @@ public class EntryOperatorMenu extends JFrame {
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return btn;
     }
-
     private JTextField darkField() {
         JTextField f = new JTextField();
         f.setBackground(BG_FIELD);
@@ -222,7 +211,6 @@ public class EntryOperatorMenu extends JFrame {
             new EmptyBorder(4, 6, 4, 6)));
         return f;
     }
-
     private JLabel darkLabel(String text) {
         JLabel l = new JLabel(text);
         l.setForeground(TEXT_DIM);

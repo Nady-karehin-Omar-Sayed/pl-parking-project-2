@@ -150,7 +150,6 @@ public class AdminMenu extends JFrame {
         JTable table = styledTable(usersTableModel);
         refreshUsersTable();
 
-        // Form
         JPanel form = new JPanel(new GridLayout(5, 2, 8, 8));
         form.setBackground(BG_PANEL);
         form.setBorder(BorderFactory.createTitledBorder(
@@ -353,7 +352,6 @@ public class AdminMenu extends JFrame {
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return btn;
     }
-
     private JTextField darkField() {
         JTextField f = new JTextField();
         f.setBackground(BG_FIELD);
@@ -364,14 +362,12 @@ public class AdminMenu extends JFrame {
                 new EmptyBorder(4, 6, 4, 6)));
         return f;
     }
-
     private JLabel darkLabel(String text) {
         JLabel l = new JLabel(text);
         l.setForeground(TEXT_DIM);
         l.setFont(new Font("SansSerif", Font.PLAIN, 12));
         return l;
     }
-
     private int parseId(String text) {
         try {
             return Integer.parseInt(text.trim());

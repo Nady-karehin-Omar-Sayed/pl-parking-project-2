@@ -8,7 +8,6 @@ import javax.swing.table.DefaultTableModel;
 import models.Payment;
 import models.Ticket;
 import services.ParkingManager;
-
 public class ExitOperatorMenu extends JFrame {
 
     private final  ParkingManager manager;
@@ -171,7 +170,6 @@ public class ExitOperatorMenu extends JFrame {
         t.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 13));
         return t;
     }
-
     private JButton makeButton(String text, Color bg) {
         JButton btn = new JButton(text);
         btn.setBackground(bg);
@@ -183,7 +181,6 @@ public class ExitOperatorMenu extends JFrame {
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return btn;
     }
-
     private JTextField darkField() {
         JTextField f = new JTextField();
         f.setBackground(BG_FIELD);
@@ -194,7 +191,6 @@ public class ExitOperatorMenu extends JFrame {
             new EmptyBorder(4, 6, 4, 6)));
         return f;
     }
-
     private JLabel darkLabel(String text) {
         JLabel l = new JLabel(text);
         l.setForeground(TEXT_DIM);
