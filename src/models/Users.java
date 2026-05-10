@@ -28,6 +28,10 @@ public class Users {
     public void setPassword(String password) { this.password = password; }
     public void setRole(String role)         { this.role = role; }
  
+    public String toCSV() {
+        return id + "," + name + "," + username + "," + password + "," + role;
+    }
+
     public void display() {
         System.out.println("ID: " + id + " | Name: " + name
                          + " | Username: " + username + " | Role: " + role);

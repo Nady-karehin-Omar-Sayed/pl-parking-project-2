@@ -19,13 +19,17 @@ public class ParkingManager {
 
     public ParkingManager() {
         CSVHandler.ensureDataFolder();
-        tickets= CSVHandler.loadTickets();
-        payments=CSVHandler.loadPayments();
-        users = new ArrayList<>();
-        customers=new ArrayList<>();
-        spots=new ArrayList<>();
+        tickets  = CSVHandler.loadTickets();
+        payments = CSVHandler.loadPayments();
+        users    = CSVHandler.loadUsers();
+        customers = new ArrayList<>();
+        spots     = new ArrayList<>();
 
-        seedUsers();
+        if (users.isEmpty()) {
+            seedUsers();
+            CSVHandler.saveUsers(users);
+        }
+
         seedSpots();
         calculateNextIds();
     }
@@ -52,20 +56,26 @@ public class ParkingManager {
 
 
     private void calculateNextIds(){
-         nextTicketId = 1;
-         for (Ticket t : tickets) {
-                if (t.getTicketId() >= nextTicketId) {
-                    nextTicketId = t.getTicketId() + 1;
-                }
+        nextUserId = 1;
+        for (Users u : users) {
+            if (u.getId() >= nextUserId) {
+                nextUserId = u.getId() + 1;
             }
-         nextPaymentId = 1;
-            for (Payment p : payments) {
-                if (p.getPaymentId() >= nextPaymentId) {
-                    nextPaymentId = p.getPaymentId() + 1;
-                }
-            }
-           nextCustomerId = 1;
         }
+        nextTicketId = 1;
+        for (Ticket t : tickets) {
+            if (t.getTicketId() >= nextTicketId) {
+                nextTicketId = t.getTicketId() + 1;
+            }
+        }
+        nextPaymentId = 1;
+        for (Payment p : payments) {
+            if (p.getPaymentId() >= nextPaymentId) {
+                nextPaymentId = p.getPaymentId() + 1;
+            }
+        }
+        nextCustomerId = 1;
+    }
 
     public Users login(String username, String password){
         for(Users u: users){
@@ -79,26 +89,25 @@ public class ParkingManager {
 
 
     public void addUser(String name, String username, String password, String role){
-
-        Users u= new Users(nextUserId, name, username, password, role);
+        Users u = new Users(nextUserId, name, username, password, role);
         users.add(u);
         nextUserId++;
+        CSVHandler.saveUsers(users);
         System.out.println("User added: " + name + " (ID: " + (nextUserId - 1) + ")");
+    }
 
-     }
-
-     public boolean deleteUser(int userId){
-        for(int i=0; i<=users.size();i++){
+    public boolean deleteUser(int userId){
+        for(int i=0; i<users.size(); i++){
             if(users.get(i).getId() == userId){
                 users.remove(i);
+                CSVHandler.saveUsers(users);
                 System.out.println("user deleted");
                 return true;
             }
         }
-
         System.out.println("user not found");
         return false;
-     }
+    }
 
      
     
@@ -110,6 +119,7 @@ public class ParkingManager {
                     u.setUsername(username);
                     u.setPassword(password);
                     u.setRole(role);
+                    CSVHandler.saveUsers(users);
                     System.out.println("User updated.");
                     return true;
                 }

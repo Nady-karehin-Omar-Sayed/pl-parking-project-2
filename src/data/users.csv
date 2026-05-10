@@ -1,0 +1,4 @@
+id,name,username,password,role
+1,Admin,admin,admin123,ADMIN
+2,Entry Operator,entry,entry123,ENTRY_OPERATOR
+3,Exit Operator,exit,exit123,EXIT_OPERATOR
